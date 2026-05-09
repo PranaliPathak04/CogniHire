@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+python-dotenv
+groq
+spacy
+sentence-transformers
+PyPDF2
+pytesseract
+pdf2image
+scikit-learn
+beautifulsoup4
+requests
+python-multipart
