@@ -185,7 +185,7 @@ function QuestionCard({ text, index }) {
 }
 
 // ── Main App ──────────────────────────────────────────────────────────────
-export default function App() {
+export default function App({ user, onSignOut }) {
   const [dark, setDark] = useState(true);
   const [file, setFile] = useState(null);
   const [jdText, setJdText] = useState("");
@@ -253,6 +253,7 @@ export default function App() {
       <div className="orb orb-3" />
 
       {/* Nav */}
+
       <nav className="nav">
         <div className="nav-inner">
           <div className="nav-brand">
@@ -262,9 +263,27 @@ export default function App() {
             <span className="brand-name">CogniHire</span>
             <span className="brand-tag">AI</span>
           </div>
-          <button className="theme-toggle" onClick={() => setDark(!dark)}>
-            <Icon d={dark ? Icons.sun : Icons.moon} size={18} />
-          </button>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            {/* User email */}
+            <span style={{ fontSize: "13px", color: "var(--text-muted)" }}>
+              {user?.email}
+            </span>
+            {/* Sign out */}
+            <button
+              className="theme-toggle"
+              onClick={onSignOut}
+              title="Sign out"
+            >
+              <Icon
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                size={18}
+              />
+            </button>
+            {/* Theme toggle */}
+            <button className="theme-toggle" onClick={() => setDark(!dark)}>
+              <Icon d={dark ? Icons.sun : Icons.moon} size={18} />
+            </button>
+          </div>
         </div>
       </nav>
 
