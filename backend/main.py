@@ -4,6 +4,8 @@ from parser import extract_text_smart
 from scorer import calculate_ats_score
 from advisor import get_ai_advice, get_rewrite_suggestions, generate_interview_questions
 from scraper import scrape_jd
+from job_search import search_all_roles
+from advisor import predict_job_roles
 
 app = FastAPI()
 
@@ -50,12 +52,25 @@ async def analyze(
 def health():
     return {"status": "ok"}
 
-@app.post("/analyze")
-async def analyze(
+
+
+
+
+@app.post("/jobs")
+async def get_jobs(
     resume: UploadFile = File(...),
-    jd_text: str = Form(None),
-    jd_url: str = Form(None)
+    location: str = Form("India")
 ):
-    # Add this debug line
-    print(f"JD received: '{jd_text[:100] if jd_text else None}'")
-    print(f"JD length: {len(jd_text) if jd_text else 0}")
+    resume_text = extract_text_smart(resume.file)
+
+    # Step 1 — LLM predicts roles
+    predicted_roles = predict_job_roles(resume_text)
+    print(f"Predicted roles: {predicted_roles}")
+
+    # Step 2 — Search jobs for each role
+    jobs = search_all_roles(predicted_roles, location)
+
+    return {
+        "jobs": jobs,
+        "predicted_roles": predicted_roles
+    }

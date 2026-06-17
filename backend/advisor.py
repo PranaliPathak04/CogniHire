@@ -1,6 +1,7 @@
 from groq import Groq
 from dotenv import load_dotenv
 import os
+import json
 
 load_dotenv()
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
@@ -40,3 +41,19 @@ Mix: 3 technical (focus on {missing_skills}), 4 conceptual, 3 behavioral.
 For each add a one-line answering tip.
 JD: {jd_text}"""
     )
+
+def predict_job_roles(resume_text: str) -> list:
+    response = _call_groq(
+        system="You are a career counselor. Respond ONLY with a JSON array of strings. No explanation, no markdown, no backticks.",
+        user=f"""Based on this resume, predict the top 5 most suitable job roles this person should apply for.
+Return ONLY a JSON array like: ["Full Stack Developer", "React Developer", "Frontend Engineer"]
+Resume: {resume_text[:2000]}"""
+    )
+    try:
+        # Clean response just in case
+        clean = response.strip().replace("```json", "").replace("```", "").strip()
+        roles = json.loads(clean)
+        return roles[:5] if isinstance(roles, list) else []
+    except:
+        # Fallback if parsing fails
+        return ["Software Engineer", "Full Stack Developer", "Frontend Developer"]
