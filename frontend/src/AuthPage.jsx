@@ -231,7 +231,7 @@ const authCss = `
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap');
 
 :root {
-  --bg: #080c14;
+  --bg: #010101;
   --surface: rgba(255,255,255,0.04);
   --surface-hover: rgba(255,255,255,0.07);
   --border: rgba(255,255,255,0.08);
@@ -252,7 +252,7 @@ const authCss = `
 
 /* Orbs */
 .orb { position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; }
-.orb-1 { width: 600px; height: 600px; background: var(--orb1); top: -200px; right: -100px; animation: drift1 18s ease-in-out infinite; }
+
 .orb-2 { width: 500px; height: 500px; background: var(--orb2); bottom: 0; left: -150px; animation: drift2 22s ease-in-out infinite; }
 .orb-3 { width: 400px; height: 400px; background: var(--orb3); top: 50%; left: 50%; transform: translate(-50%,-50%); animation: drift3 16s ease-in-out infinite; }
 @keyframes drift1 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-40px,60px) scale(1.1); } }

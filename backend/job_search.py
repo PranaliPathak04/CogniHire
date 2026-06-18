@@ -30,7 +30,7 @@ def search_jobs_by_role(role: str, location: str = "India") -> list:
                 "location": job.get("job_city", "") or job.get("job_country", ""),
                 "employment_type": job.get("job_employment_type", ""),
                 "apply_url": job.get("job_apply_link", ""),
-                "description": (job.get("job_description", "") or "")[:300],
+                "description": (job.get("job_description", "") or "")[:5000],
                 "required_skills": job.get("job_highlights", {}).get("Qualifications", [])[:4],
                 "matched_role": role,  # tag which role this came from
             })
