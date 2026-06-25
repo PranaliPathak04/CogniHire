@@ -28,10 +28,6 @@ export default function UploadPage({
   return (
     <div className="upload-page">
       <section className="hero">
-        <div className="hero-eyebrow">
-          <Icon d={Icons.sparkles} size={14} />
-          <span>Powered by Llama 3.3 · 70B</span>
-        </div>
         <h1 className="hero-title">
           Land the job
           <br />
