@@ -10,7 +10,7 @@
 }
 
 .dark {
-  --bg: #101010;
+  --bg: #010101;
   --surface: rgba(255, 255, 255, 0.04);
   --surface-hover: rgba(255, 255, 255, 0.07);
   --border: rgba(255, 255, 255, 0.08);
@@ -20,7 +20,7 @@
   --text-muted: #64748b;
   --accent: #f472b6;
   --accent-glow: rgba(56, 189, 248, 0.2);
-  --accent-btn: #1ec9c6;
+  --accent-btn: #3b82f6;
   --ring-bg: rgba(255, 255, 255, 0.06);
   --orb1: rgba(56, 189, 248, 0.12);
   --orb2: rgba(99, 102, 241, 0.1);
@@ -47,7 +47,7 @@
   --text-muted: #94a3b8;
   --accent: #db2777;
   --accent-glow: rgba(14, 165, 233, 0.15);
-  --accent-btn: #02ceb3;
+  --accent-btn: #0891b2;
   --ring-bg: rgba(0, 0, 0, 0.06);
   --orb1: rgba(56, 189, 248, 0.18);
   --orb2: rgba(99, 102, 241, 0.14);

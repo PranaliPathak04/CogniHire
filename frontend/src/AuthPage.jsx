@@ -5,6 +5,7 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import { auth, googleProvider } from "../firebase";
+import Logo from "./assets/cognihire-logo.svg";
 
 const Icon = ({ d, size = 20, stroke = "currentColor", fill = "none" }) => (
   <svg
@@ -112,14 +113,12 @@ export default function AuthPage({ onAuth }) {
 
       {/* Background orbs */}
       <div className="orb orb-1" />
-      <div className="orb orb-2" />
-      <div className="orb orb-3" />
 
       <div className="auth-wrap">
         {/* Brand */}
         <div className="auth-brand">
           <div className="brand-icon">
-            <Icon d={Icons.zap} size={20} fill="white" stroke="none" />
+            <img src={Logo} alt="CogniHire Logo" className="brand-logo" />
           </div>
           <span className="brand-name">CogniHire</span>
           <span className="brand-tag">AI</span>
@@ -241,7 +240,7 @@ const authCss = `
   --text-muted: #64748b;
   --accent: #38bdf8;
   --accent-glow: rgba(56,189,248,0.2);
-  --accent-btn: linear-gradient(135deg, #0ea5e9, #6366f1);
+  --accent-btn: #3b82f6;
   --missing: rgba(239,68,68,0.15);
   --missing-text: #f87171;
   --missing-border: rgba(239,68,68,0.3);
@@ -260,7 +259,17 @@ const authCss = `
 @keyframes drift3 { 0%,100% { transform: translate(-50%,-50%) scale(1); } 50% { transform: translate(-50%,-50%) scale(1.15); } }
 
 .brand-name { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; color: var(--text-primary); }
-.brand-icon { width: 32px; height: 32px; background: var(--accent-btn); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; }
+.brand-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-logo {
+  width: 32px;
+  height: 32px;
+  display: block;
+}
 .brand-tag { font-size: 10px; font-weight: 600; background: var(--accent-btn); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: 1px; }
 
 
