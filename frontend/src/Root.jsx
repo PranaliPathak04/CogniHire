@@ -3,9 +3,11 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../firebase";
 import App from "./App";
 import AuthPage from "./AuthPage";
+import SplashScreen from "./components/SplashScreen";
 
 export default function Root() {
   const [user, setUser] = useState(undefined); // undefined = loading
+  const [splashDone, setSplashDone] = useState(false);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => setUser(u));
@@ -13,25 +15,9 @@ export default function Root() {
   }, []);
 
   // Still checking auth state
-  if (user === undefined) {
-    return (
-      <div
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "#080c14",
-          color: "#64748b",
-          fontFamily: "Outfit, sans-serif",
-          fontSize: "14px",
-        }}
-      >
-        Loading...
-      </div>
-    );
+  if (user === undefined || !splashDone) {
+    return <SplashScreen onComplete={() => setSplashDone(true)} />;
   }
-
   // Not logged in
   if (!user) {
     return <AuthPage onAuth={() => {}} />;
