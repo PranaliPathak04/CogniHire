@@ -33,12 +33,27 @@ REWRITTEN: ...
 Resume: {resume_text}"""
     )
 
+# def generate_interview_questions(jd_text: str, missing_skills: list) -> str:
+#     return _call_groq(
+#         system="You are a senior technical interviewer.",
+#         user=f"""Generate 10 interview questions for this job.
+# Mix: 3 technical (focus on {missing_skills}), 4 conceptual, 3 behavioral.
+# For each add a one-line answering tip.
+# JD: {jd_text}"""
+#     )
 def generate_interview_questions(jd_text: str, missing_skills: list) -> str:
     return _call_groq(
         system="You are a senior technical interviewer.",
-        user=f"""Generate 10 interview questions for this job.
+        user=f"""Generate exactly 10 interview questions for this job.
 Mix: 3 technical (focus on {missing_skills}), 4 conceptual, 3 behavioral.
-For each add a one-line answering tip.
+For each question add a one-line answering tip.
+
+Format each question EXACTLY like this, nothing else:
+QUESTION: <question text>
+TIP: <one-line tip>
+CATEGORY: <Technical|Conceptual|Behavioral>
+
+No intro sentence, no numbering, no extra text.
 JD: {jd_text}"""
     )
 

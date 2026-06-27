@@ -41,11 +41,14 @@ async def analyze(
     rewrites = get_rewrite_suggestions(resume_text, score["missing_skills"])
     questions = generate_interview_questions(jd, score["missing_skills"])
 
+    questions_list = [block.strip() for block in questions.strip().split("\n\n") if block.strip()]
+    rewrites_list = [block.strip() for block in rewrites.strip().split("\n\n") if block.strip()]
+
     return {
         "score": score,
         "advice": advice,
-        "rewrites": rewrites,
-        "interview_questions": questions
+        "rewrites": rewrites_list,
+        "interview_questions": questions_list
     }
 
 @app.get("/health")

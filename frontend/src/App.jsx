@@ -136,12 +136,10 @@ export default function App({ user, onSignOut }) {
     }
   };
 
-  const questions = result?.interview_questions
-    ? result.interview_questions.split(/\n(?=\d+\.)/).filter(Boolean)
+  const questions = Array.isArray(result?.interview_questions)
+    ? result.interview_questions
     : [];
-  const rewrites = result?.rewrites
-    ? result.rewrites.split(/\n(?=ORIGINAL:)/).filter(Boolean)
-    : [];
+  const rewrites = Array.isArray(result?.rewrites) ? result.rewrites : [];
 
   const hasResult = !!result;
 
