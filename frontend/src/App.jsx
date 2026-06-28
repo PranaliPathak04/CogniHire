@@ -15,6 +15,7 @@ import RewritesPage from "./pages/RewritesPage.jsx";
 import InterviewPage from "./pages/InterviewPage.jsx";
 import JobsPage from "./pages/JobsPage.jsx";
 import HistoryPage from "./pages/HistoryPage.jsx";
+import { motion } from "framer-motion";
 
 const API = "http://localhost:8000";
 
@@ -35,7 +36,7 @@ const API = "http://localhost:8000";
 //--Job Modal Component────────────────────────────────────────────────────────
 
 // ── Main App ──────────────────────────────────────────────────────────────
-export default function App({ user, onSignOut }) {
+export default function App({ user, onSignOut, splashDone }) {
   const [dark, setDark] = useState(true);
   const [activePage, setActivePage] = useState("home");
   const [loading, setLoading] = useState(false);
@@ -200,9 +201,11 @@ export default function App({ user, onSignOut }) {
       <nav className="nav">
         <div className="nav-inner">
           <div className="nav-brand">
-            <div
-              className="brand-icon"
+            <motion.div
+              layoutId="brand-logo"
+              layout
               style={{
+                opacity: splashDone ? 1 : 0,
                 background: "#0f172a",
                 border: "1.5px solid #38bdf8",
                 borderRadius: 8,
@@ -212,9 +215,9 @@ export default function App({ user, onSignOut }) {
                 alignItems: "center",
                 justifyContent: "center",
               }}
+              transition={{ duration: 0.6, ease: [0.76, 0, 0.24, 1] }}
             >
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                {/* Document */}
                 <rect
                   x="4"
                   y="3"
@@ -224,7 +227,6 @@ export default function App({ user, onSignOut }) {
                   stroke="white"
                   strokeWidth="1.3"
                 />
-                {/* Lines */}
                 <line
                   x1="6.5"
                   y1="7.5"
@@ -252,7 +254,6 @@ export default function App({ user, onSignOut }) {
                   strokeWidth="1"
                   strokeLinecap="round"
                 />
-                {/* Scan line */}
                 <line
                   x1="3"
                   y1="10"
@@ -263,7 +264,7 @@ export default function App({ user, onSignOut }) {
                   strokeLinecap="round"
                 />
               </svg>
-            </div>
+            </motion.div>
             <span className="brand-name">CogniHire</span>
             <span className="brand-tag">AI</span>
           </div>

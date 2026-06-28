@@ -4,9 +4,10 @@ import { auth } from "../firebase";
 import App from "./App";
 import AuthPage from "./AuthPage";
 import SplashScreen from "./components/SplashScreen";
+import { AnimatePresence } from "framer-motion";
 
 export default function Root() {
-  const [user, setUser] = useState(undefined); // undefined = loading
+  const [user, setUser] = useState(undefined);
   const [splashDone, setSplashDone] = useState(false);
 
   useEffect(() => {
@@ -14,15 +15,32 @@ export default function Root() {
     return unsub;
   }, []);
 
-  // Still checking auth state
-  if (user === undefined || !splashDone) {
-    return <SplashScreen onComplete={() => setSplashDone(true)} />;
-  }
-  // Not logged in
+  if (user === undefined) return null;
+
   if (!user) {
-    return <AuthPage onAuth={() => {}} />;
+    return splashDone ? (
+      <AuthPage onAuth={() => {}} />
+    ) : (
+      <AnimatePresence>
+        {!splashDone && (
+          <SplashScreen key="splash" onComplete={() => setSplashDone(true)} />
+        )}
+      </AnimatePresence>
+    );
   }
 
-  // Logged in
-  return <App user={user} onSignOut={() => signOut(auth)} />;
+  return (
+    <>
+      <App
+        user={user}
+        onSignOut={() => signOut(auth)}
+        splashDone={splashDone}
+      />
+      <AnimatePresence>
+        {!splashDone && (
+          <SplashScreen key="splash" onComplete={() => setSplashDone(true)} />
+        )}
+      </AnimatePresence>
+    </>
+  );
 }
