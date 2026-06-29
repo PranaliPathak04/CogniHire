@@ -1,6 +1,6 @@
 import { Icon, Icons } from "../constants/icons.jsx";
 
-export default function JobModal({ job, onClose }) {
+export default function JobModal({ job, onClose, onMatchJd }) {
   if (!job) return null;
   return (
     <div
@@ -219,10 +219,51 @@ export default function JobModal({ job, onClose }) {
               fontSize: 14,
               fontWeight: 600,
               textDecoration: "none",
+              transition: "all 0.2s",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.opacity = "0.85";
+              e.currentTarget.style.transform = "translateY(-1px)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.opacity = "1";
+              e.currentTarget.style.transform = "translateY(0)";
             }}
           >
             Apply Now <Icon d={Icons.arrow} size={14} />
           </a>
+          <button
+            onClick={() => onMatchJd(job.description)}
+            style={{
+              flex: 1,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 6,
+              padding: "12px",
+              background: "var(--surface)",
+              border: "1px solid var(--accent)",
+              color: "var(--accent)",
+              borderRadius: 12,
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: "pointer",
+              fontFamily: "'Outfit', sans-serif",
+              transition: "all 0.5s",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "var(--accent)";
+              e.currentTarget.style.color = "white";
+              e.currentTarget.style.transform = "translateY(-1px)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "var(--surface)";
+              e.currentTarget.style.color = "var(--accent)";
+              e.currentTarget.style.transform = "translateY(0)";
+            }}
+          >
+            <Icon d={Icons.star} size={14} /> Match to My Resume
+          </button>
           <button
             onClick={onClose}
             style={{
@@ -235,6 +276,17 @@ export default function JobModal({ job, onClose }) {
               fontWeight: 500,
               cursor: "pointer",
               fontFamily: "'Outfit', sans-serif",
+              transition: "all 0.5s",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = "var(--text-secondary)";
+              e.currentTarget.style.color = "var(--text-primary)";
+              e.currentTarget.style.transform = "translateY(-1px)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = "var(--border)";
+              e.currentTarget.style.color = "var(--text-secondary)";
+              e.currentTarget.style.transform = "translateY(0)";
             }}
           >
             Close

@@ -55,6 +55,8 @@ export default function App({ user, onSignOut, splashDone }) {
     }
   });
   const [selectedJob, setSelectedJob] = useState(null);
+  const [prefillJd, setPrefillJd] = useState("");
+  const [prefillFile, setPrefillFile] = useState(null);
 
   const handleAnalyze = async (file, jdText, jdUrl, jdMode) => {
     if (!file) return setError("Please upload a resume PDF.");
@@ -288,7 +290,21 @@ export default function App({ user, onSignOut, splashDone }) {
 
       {/* App Shell */}
       <div className="app-shell">
-        <JobModal job={selectedJob} onClose={() => setSelectedJob(null)} />
+        <JobModal
+          job={selectedJob}
+          onClose={() => setSelectedJob(null)}
+          onMatchJd={(desc) => {
+            setPrefillJd(desc);
+            setPrefillFile(currentFile);
+            setTimeout(() => {
+              setPrefillJd(desc);
+              setPrefillFile(currentFile);
+            }, 0);
+            setSelectedJob(null);
+            setResult(null);
+            setActivePage("home");
+          }}
+        />
         {/* Sidebar */}
         <aside className="sidebar">
           <div className="sidebar-inner">
@@ -332,6 +348,8 @@ export default function App({ user, onSignOut, splashDone }) {
               loading={loading}
               jobsLoading={jobsLoading}
               error={error}
+              prefillJd={prefillJd}
+              prefillFile={prefillFile}
             />
           )}
           {activePage === "dashboard" && result && (

@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { Icon, Icons } from "../constants/icons.jsx";
 
 export default function UploadPage({
@@ -7,9 +7,11 @@ export default function UploadPage({
   loading,
   jobsLoading,
   error,
+  prefillJd,
+  prefillFile,
 }) {
   const [file, setFile] = useState(null);
-  const [jdText, setJdText] = useState("");
+  const [jdText, setJdText] = useState(prefillJd || "");
   const [jdUrl, setJdUrl] = useState("");
   const [jdMode, setJdMode] = useState("text");
   const [dragging, setDragging] = useState(false);
@@ -24,6 +26,17 @@ export default function UploadPage({
     setDragging(false);
     handleFile(e.dataTransfer.files[0]);
   }, []);
+
+  useEffect(() => {
+    if (prefillJd) {
+      setJdText(prefillJd);
+      setJdMode("text");
+    }
+  }, [prefillJd]);
+
+  useEffect(() => {
+    if (prefillFile) setFile(prefillFile);
+  }, [prefillFile]);
 
   return (
     <div className="upload-page">
