@@ -16,6 +16,17 @@ export default function UploadPage({
   const [jdMode, setJdMode] = useState("text");
   const [dragging, setDragging] = useState(false);
   const fileRef = useRef();
+  const loadingMessages = [
+    "Reading your resume...",
+    "Extracting your skills and experience...",
+    "Predicting the best job roles for you...",
+    "Searching live listings across India...",
+    "Filtering out irrelevant results...",
+    "Ranking jobs by your skill match...",
+    "Almost there, hang tight...",
+    "Just a few more seconds...",
+  ];
+  const [msgIndex, setMsgIndex] = useState(0);
 
   const handleFile = (f) => {
     if (f && f.type === "application/pdf") setFile(f);
@@ -26,6 +37,17 @@ export default function UploadPage({
     setDragging(false);
     handleFile(e.dataTransfer.files[0]);
   }, []);
+
+  useEffect(() => {
+    if (!jobsLoading) {
+      setMsgIndex(0);
+      return;
+    }
+    const interval = setInterval(() => {
+      setMsgIndex((prev) => Math.min(prev + 1, loadingMessages.length - 1));
+    }, 7000);
+    return () => clearInterval(interval);
+  }, [jobsLoading]);
 
   useEffect(() => {
     if (prefillJd) {
@@ -170,7 +192,7 @@ export default function UploadPage({
           {jobsLoading ? (
             <>
               <span className="spinner" />
-              Finding matching jobs...
+              Finding jobs...
             </>
           ) : (
             <>
@@ -179,6 +201,20 @@ export default function UploadPage({
             </>
           )}
         </button>
+        {jobsLoading && (
+          <p
+            style={{
+              textAlign: "center",
+              fontSize: 13,
+              color: "var(--text-muted)",
+              marginTop: 10,
+              transition: "all 0.3s",
+              fontStyle: "italic",
+            }}
+          >
+            {loadingMessages[msgIndex]}
+          </p>
+        )}
       </div>
     </div>
   );
