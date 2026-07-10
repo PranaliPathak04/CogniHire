@@ -47,6 +47,29 @@ export async function generatePDF(result, fileName, userEmail) {
       : doc.text(str, x, yy, o.maxWidth ? { maxWidth: o.maxWidth } : undefined);
   };
 
+  // ── Defensive normalizers ────────────────────────────────────────────
+  // result.rewrites / result.interview_questions can arrive as either:
+  //   - a raw string straight from a fresh /analyze call, OR
+  //   - an already-split array (e.g. reloaded from History / localStorage)
+  // These helpers make generatePDF work with either shape.
+  const toRewriteBlocks = (rewrites) => {
+    if (!rewrites) return [];
+    if (Array.isArray(rewrites)) return rewrites;
+    if (typeof rewrites === "string") {
+      return rewrites.split(/\n(?=ORIGINAL:)/).filter(Boolean);
+    }
+    return [];
+  };
+
+  const toQuestionBlocks = (questions) => {
+    if (!questions) return [];
+    if (Array.isArray(questions)) return questions;
+    if (typeof questions === "string") {
+      return questions.split(/\n(?=\d+\.)/).filter(Boolean);
+    }
+    return [];
+  };
+
   // Background
   doc.setFillColor(...C.bg);
   doc.rect(0, 0, W, 297, "F");
@@ -178,7 +201,7 @@ export async function generatePDF(result, fileName, userEmail) {
   // AI Feedback
   section("AI Recruiter Feedback", C.accent);
   doc
-    .splitTextToSize(result.advice.replace(/\n+/g, " "), CW - 4)
+    .splitTextToSize((result.advice || "").replace(/\n+/g, " "), CW - 4)
     .forEach((line) => {
       checkY(7);
       txt(line, PL + 4, y, { size: 9, color: C.muted });
@@ -186,10 +209,8 @@ export async function generatePDF(result, fileName, userEmail) {
     });
   y += 6;
 
-  // Rewrites
-  const rewrites = result.rewrites
-    ? result.rewrites.split(/\n(?=ORIGINAL:)/).filter(Boolean)
-    : [];
+  // Rewrites — now uses the defensive normalizer
+  const rewrites = toRewriteBlocks(result.rewrites);
   if (rewrites.length) {
     section("Resume Rewrites", C.purple);
     rewrites.slice(0, 6).forEach((block) => {
@@ -232,10 +253,8 @@ export async function generatePDF(result, fileName, userEmail) {
     });
   }
 
-  // Interview questions
-  const qs = result.interview_questions
-    ? result.interview_questions.split(/\n(?=\d+\.)/).filter(Boolean)
-    : [];
+  // Interview questions — now uses the defensive normalizer
+  const qs = toQuestionBlocks(result.interview_questions);
   if (qs.length) {
     section("Interview Preparation", [34, 211, 238]);
     qs.slice(0, 10).forEach((q, i) => {

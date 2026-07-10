@@ -197,7 +197,7 @@ export default function App({ user, onSignOut, splashDone }) {
     <div className={`app ${dark ? "dark" : "light"}`}>
       <div className="orb orb-1" />
 
-      <div className="orb orb-3" />
+      {/* <div className="orb orb-3" /> */}
 
       {/* Top Nav */}
       <nav className="nav">
@@ -363,7 +363,7 @@ export default function App({ user, onSignOut, splashDone }) {
           )}
           {activePage === "skills" && result && <SkillsPage result={result} />}
           {activePage === "rewrites" && result && (
-            <RewritesPage rewrites={rewrites} />
+            <RewritesPage rewrites={rewrites} resumeText={result.resume_text} />
           )}
           {activePage === "interview" && result && (
             <InterviewPage questions={questions} />

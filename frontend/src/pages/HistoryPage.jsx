@@ -1,5 +1,127 @@
 import { Icon, Icons } from "../constants/icons.jsx";
 
+function AtsTrendChart({ scoreHistory }) {
+  // chronological order, oldest -> newest, left to right
+  const data = [...scoreHistory].reverse();
+  const width = 900;
+  const height = 220;
+  const padX = 40;
+  const padTop = 30;
+  const padBottom = 40;
+  const chartW = width - padX * 2;
+  const chartH = height - padTop - padBottom;
+
+  const n = data.length;
+  const points = data.map((entry, i) => {
+    const x = n === 1 ? padX + chartW / 2 : padX + (i / (n - 1)) * chartW;
+    const y = padTop + chartH - (entry.ats / 100) * chartH;
+    return { x, y, entry };
+  });
+
+  const linePath = points
+    .map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`)
+    .join(" ");
+
+  const areaPath =
+    points.length > 0
+      ? `${linePath} L ${points[points.length - 1].x} ${padTop + chartH} L ${points[0].x} ${padTop + chartH} Z`
+      : "";
+
+  // gridlines at 0/25/50/75/100
+  const gridLines = [0, 25, 50, 75, 100];
+
+  return (
+    <svg
+      width="100%"
+      viewBox={`0 0 ${width} ${height}`}
+      style={{ overflow: "visible" }}
+    >
+      <defs>
+        <linearGradient id="atsTrendFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.28" />
+          <stop offset="100%" stopColor="var(--accent)" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+
+      {/* gridlines + y labels */}
+      {gridLines.map((g) => {
+        const y = padTop + chartH - (g / 100) * chartH;
+        return (
+          <g key={g}>
+            <line
+              x1={padX}
+              y1={y}
+              x2={width - padX}
+              y2={y}
+              stroke="var(--border)"
+              strokeWidth="1"
+            />
+            <text
+              x={padX - 10}
+              y={y + 4}
+              fontSize="10"
+              fill="var(--text-muted)"
+              textAnchor="end"
+              fontFamily="'DM Mono', monospace"
+            >
+              {g}
+            </text>
+          </g>
+        );
+      })}
+
+      {/* filled area under line */}
+      {points.length > 1 && <path d={areaPath} fill="url(#atsTrendFill)" />}
+
+      {/* the line */}
+      {points.length > 1 && (
+        <path
+          d={linePath}
+          fill="none"
+          stroke="var(--accent)"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      )}
+
+      {/* points + value labels + date labels */}
+      {points.map((p, i) => (
+        <g key={i}>
+          <circle
+            cx={p.x}
+            cy={p.y}
+            r="4.5"
+            fill="var(--bg)"
+            stroke="var(--accent)"
+            strokeWidth="2.5"
+          />
+          <text
+            x={p.x}
+            y={p.y - 12}
+            fontSize="11"
+            fontWeight="700"
+            fill="var(--text-primary)"
+            textAnchor="middle"
+            fontFamily="'DM Mono', monospace"
+          >
+            {p.entry.ats}
+          </text>
+          <text
+            x={p.x}
+            y={height - 14}
+            fontSize="10"
+            fill="var(--text-muted)"
+            textAnchor="middle"
+          >
+            {p.entry.date.split(" ").slice(0, 2).join(" ")}
+          </text>
+        </g>
+      ))}
+    </svg>
+  );
+}
+
 export default function HistoryPage({ scoreHistory, setScoreHistory }) {
   return (
     <div className="page-content animate-in">
@@ -18,165 +140,39 @@ export default function HistoryPage({ scoreHistory, setScoreHistory }) {
       ) : (
         <>
           <div className="card" style={{ marginBottom: 20 }}>
-            <p
-              style={{
-                fontSize: 13,
-                fontWeight: 600,
-                color: "var(--text-secondary)",
-                marginBottom: 16,
-              }}
-            >
-              ATS Score History
-              <span
-                style={{
-                  fontSize: 11,
-                  fontWeight: 400,
-                  color: "var(--text-muted)",
-                  marginLeft: 8,
-                }}
-              >
-                last {scoreHistory.length} analyses
-              </span>
-            </p>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "flex-end",
-                gap: 16,
-                height: 160,
-                paddingTop: 24,
-                overflowX: "auto",
-                paddingBottom: 8,
-              }}
-            >
-              {[...scoreHistory].reverse().map((entry, i) => (
-                <div
-                  key={entry.id}
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: 6,
-                    flexShrink: 0,
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "flex-end",
-                      gap: 3,
-                      height: 120,
-                    }}
-                  >
-                    {[
-                      { val: entry.ats, color: "var(--accent)" },
-                      { val: entry.keyword, color: "#22d3ee" },
-                      { val: entry.semantic, color: "#a78bfa" },
-                    ].map((b, bi) => (
-                      <div
-                        key={bi}
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          gap: 3,
-                          justifyContent: "flex-end",
-                          height: "100%",
-                        }}
-                      >
-                        <span
-                          style={{
-                            fontSize: 9,
-                            color: "var(--text-muted)",
-                            fontFamily: "'DM Mono',monospace",
-                          }}
-                        >
-                          {b.val}
-                        </span>
-                        <div
-                          style={{
-                            width: 14,
-                            borderRadius: "3px 3px 0 0",
-                            background: b.color,
-                            height: `${b.val * 1.1}px`,
-                            minHeight: 4,
-                          }}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                  <span
-                    style={{
-                      fontSize: 10,
-                      color: "var(--text-muted)",
-                      textAlign: "center",
-                    }}
-                  >
-                    {entry.date.split(" ").slice(0, 2).join(" ")}
-                  </span>
-                  <span
-                    style={{
-                      fontSize: 9,
-                      color: "var(--text-muted)",
-                      fontFamily: "'DM Mono',monospace",
-                      maxWidth: 60,
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                    }}
-                    title={entry.fileName}
-                  >
-                    {entry.fileName.replace(".pdf", "").slice(0, 10)}
-                    {entry.fileName.length > 12 ? "…" : ""}
-                  </span>
-                </div>
-              ))}
-            </div>
             <div
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: 14,
-                flexWrap: "wrap",
-                marginTop: 16,
-                paddingTop: 14,
-                borderTop: "1px solid var(--border)",
+                justifyContent: "space-between",
+                marginBottom: 16,
               }}
             >
-              {[
-                ["var(--accent)", "ATS Score"],
-                ["#22d3ee", "Keywords"],
-                ["#a78bfa", "Semantic"],
-              ].map(([c, l]) => (
+              <p
+                style={{
+                  fontSize: 13,
+                  fontWeight: 600,
+                  color: "var(--text-secondary)",
+                }}
+              >
+                ATS Score Trend
                 <span
-                  key={l}
                   style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 5,
-                    fontSize: 12,
+                    fontSize: 11,
+                    fontWeight: 400,
                     color: "var(--text-muted)",
+                    marginLeft: 8,
                   }}
                 >
-                  <span
-                    style={{
-                      width: 10,
-                      height: 10,
-                      borderRadius: 2,
-                      background: c,
-                      display: "inline-block",
-                    }}
-                  />{" "}
-                  {l}
+                  last {scoreHistory.length} analyses
                 </span>
-              ))}
+              </p>
               <button
                 onClick={() => {
                   localStorage.removeItem("ch_history");
                   setScoreHistory([]);
                 }}
                 style={{
-                  marginLeft: "auto",
                   fontSize: 11,
                   color: "var(--missing-text)",
                   background: "transparent",
@@ -190,8 +186,11 @@ export default function HistoryPage({ scoreHistory, setScoreHistory }) {
                 Clear history
               </button>
             </div>
+
+            <AtsTrendChart scoreHistory={scoreHistory} />
           </div>
 
+          {/* Table stays exactly as before */}
           <div
             style={{
               background: "var(--surface)",

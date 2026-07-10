@@ -48,7 +48,8 @@ async def analyze(
         "score": score,
         "advice": advice,
         "rewrites": rewrites_list,
-        "interview_questions": questions_list
+        "interview_questions": questions_list,
+        "resume_text": resume_text,  
     }
 
 @app.get("/health")
