@@ -1,12 +1,13 @@
 # CogniHire — AI Based Resume Analyser
 
-> Upload your resume. Paste a job description. Get your ATS score, skill gaps, rewritten bullet points, and interview prep — in seconds.
+> Upload your resume. Paste a job description. Get your ATS score, skill gaps, rewritten bullet points, interview prep, and matching job listings — all in one place, with your progress tracked over time.
 
 ![Tech Stack](https://img.shields.io/badge/Python-3.12-blue?style=flat-square&logo=python)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.110-009688?style=flat-square&logo=fastapi)
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react)
 ![Groq](https://img.shields.io/badge/Groq-Llama_3.3_70B-orange?style=flat-square)
 ![spaCy](https://img.shields.io/badge/spaCy-Custom_NER-09A3D5?style=flat-square&logo=spacy)
+![Firebase](https://img.shields.io/badge/Firebase-Auth_%2B_Firestore-FFCA28?style=flat-square&logo=firebase)
 
 ---
 
@@ -17,71 +18,75 @@ Most resume tools do keyword matching. CogniHire goes further:
 - **ATS Scoring** — Hybrid score combining keyword match + semantic similarity (sentence-transformers)
 - **Skill Gap Analysis** — Custom-trained spaCy NER model extracts skills from both resume and JD, identifies what's missing
 - **AI Feedback** — Groq (Llama 3.3 70B) gives actionable recruiter-style feedback
-- **Resume Rewrites** — Weak bullet points rewritten to better highlight missing skills
-- **Interview Prep** — 10 role-specific questions (technical + behavioral) with answering tips
-- **JD Scraping** — Paste a LinkedIn/Naukri URL instead of copying the job description manually
+- **Resume Rewrites** — Weak bullet points selectively rewritten (only where genuinely needed) to better highlight real, already-listed skills — never fabricated metrics or invented achievements
+- **Interview Prep** — 10 role-specific questions (technical, conceptual, behavioral) with one-line answering tips
+- **JD Scraping** — Paste a LinkedIn/Naukri/Indeed URL instead of copying the job description manually
+- **AI-Predicted Job Matching** — Groq predicts the 5 job roles best suited to a resume, then pulls live listings for each via the JSearch API
+- **Score History & Trend Tracking** — Every analysis is saved to Firestore; a dashboard chart shows ATS score progress across resume versions over time
+- **PDF Report Export** — Download the full analysis (scores, skills, rewrites, interview prep) as a branded PDF report
+- **Authentication** — Email/password and Google OAuth sign-in via Firebase, with analyses tied to your account
+
+---
+
+## Screenshots
+
+<table>
+<tr>
+<td><img src="screenshots/1-upload-page.png" width="400"/></td>
+<td><img src="screenshots/2-dashboard.png" width="400"/></td>
+</tr>
+<tr>
+<td><img src="screenshots/6-jobs.png" width="400"/></td>
+<td><img src="screenshots/8-history.png" width="400"/></td>
+</tr>
+</table>
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend | React 19, Vite, Tailwind CSS |
-| Backend | FastAPI, Python 3.12 |
-| NLP | Custom spaCy NER model + EntityRuler + skill taxonomy |
-| Embeddings | `all-MiniLM-L6-v2` via sentence-transformers |
-| LLM | Llama 3.3 70B via Groq API |
-| PDF Parsing | PyPDF2 + Tesseract OCR (fallback for scanned PDFs) |
-| JD Scraping | BeautifulSoup + Requests |
+| Layer          | Technology                                                   |
+| -------------- | ------------------------------------------------------------ |
+| Frontend       | React 19, Vite, Tailwind CSS                                 |
+| Backend        | FastAPI, Python 3.12                                         |
+| NLP            | Custom spaCy NER model + EntityRuler + skill taxonomy        |
+| Embeddings     | `all-MiniLM-L6-v2` via sentence-transformers                 |
+| LLM            | Llama 3.3 70B via Groq API                                   |
+| PDF Parsing    | PyPDF2 + Tesseract OCR (fallback for scanned PDFs)           |
+| JD Scraping    | BeautifulSoup + Requests                                     |
+| Job Matching   | JSearch API (RapidAPI) — aggregates LinkedIn, Indeed, Naukri |
+| Auth & Storage | Firebase Authentication + Firestore                          |
+| Report Export  | jsPDF (client-side PDF generation)                           |
 
 ---
 
 ## Architecture
 
 ```
-User uploads PDF + JD
-        │
-        ▼
-┌─────────────────────────────────────────┐
-│              FastAPI Backend            │
-│                                         │
-│  parser.py  →  extract_text_smart()    │
-│      PyPDF2 → OCR fallback (Tesseract) │
-│                                         │
-│  scorer.py  →  calculate_ats_score()   │
-│      spaCy NER + EntityRuler           │
-│      → skill extraction (resume + JD)  │
-│      → cosine similarity (SBERT)       │
-│      → hybrid ATS score               │
-│                                         │
-│  advisor.py →  3 Groq API calls        │
-│      → AI feedback                     │
-│      → bullet point rewrites           │
-│      → interview questions             │
-│                                         │
-│  scraper.py →  BeautifulSoup           │
-│      → LinkedIn / Naukri / Indeed      │
-└─────────────────────────────────────────┘
-        │
-        ▼
-┌─────────────────────────────────────────┐
-│            React Frontend               │
-│  Score rings · Skill badges            │
-│  Rewrite cards · Interview accordion   │
-│  Dark / Light mode                     │
-└─────────────────────────────────────────┘
+Resume + JD  →  FastAPI Backend  →  React Frontend  →  Firebase
+                 │                    │
+   parser.py ─── PDF/OCR extraction   Sidebar: Dashboard · Skills ·
+   scorer.py ─── spaCy NER + SBERT    Rewrites · Interview · Jobs ·
+   advisor.py ── Groq (feedback,      History
+                  rewrites, roles)    PDF export · Auth · Dark mode
+   scraper.py ── JD scraping
+   job_search.py ─ JSearch API
 ```
+
+Full pipeline: resume PDF → text extraction (with OCR fallback) → spaCy NER skill extraction → hybrid ATS scoring (keyword + semantic) → three Groq calls (feedback, rewrites, interview prep) → results rendered across a sidebar-based dashboard, saved to Firestore for history tracking.
 
 ---
 
 ## Local Setup
 
 ### Prerequisites
+
 - Python 3.10+
 - Node.js 18+
 - Tesseract OCR installed ([Windows](https://github.com/UB-Mannheim/tesseract/wiki) / [Mac](https://formulae.brew.sh/formula/tesseract))
 - Groq API key (free at [console.groq.com](https://console.groq.com))
+- RapidAPI account with JSearch API subscribed (free tier at [rapidapi.com](https://rapidapi.com))
+- Firebase project with Authentication (Email/Password + Google) and Firestore enabled ([console.firebase.google.com](https://console.firebase.google.com))
 
 ### Backend
 
@@ -98,11 +103,14 @@ pip install -r requirements.txt
 ```
 
 Create a `.env` file inside `backend/`:
+
 ```env
 GROQ_API_KEY=your_groq_api_key_here
+JSEARCH_API_KEY=your_rapidapi_key_here
 ```
 
 Start the server:
+
 ```bash
 uvicorn main:app --reload
 ```
@@ -118,6 +126,17 @@ npm install
 npm run dev
 ```
 
+Create a `.env` file inside `frontend/`:
+
+```env
+VITE_FIREBASE_API_KEY=your_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+```
+
 Frontend runs at `http://localhost:5173`
 
 ---
@@ -126,23 +145,9 @@ Frontend runs at `http://localhost:5173`
 
 ```
 CogniHire/
-├── backend/
-│   ├── Resume_Parser_Model/     # Custom trained spaCy NER model
-│   │   ├── ner/
-│   │   ├── tok2vec/
-│   │   ├── vocab/
-│   │   ├── taxonomy.json        # Skill taxonomy with aliases
-│   │   └── config.cfg
-│   ├── main.py                  # FastAPI routes
-│   ├── parser.py                # PDF text extraction + OCR
-│   ├── scorer.py                # ATS scoring engine
-│   ├── advisor.py               # Groq LLM calls
-│   ├── scraper.py               # JD URL scraper
-│   └── requirements.txt
-├── frontend/
-│   └── src/
-│       ├── App.jsx              # Full UI — single file
-│       └── index.css
+├── backend/          # FastAPI app, spaCy NER model, Groq/scraping/job-search logic
+├── frontend/          # React app — components, pages, auth, PDF export
+├── screenshots/
 └── README.md
 ```
 
@@ -152,25 +157,54 @@ CogniHire/
 
 ### `POST /analyze`
 
-| Field | Type | Description |
-|---|---|---|
-| `resume` | File | PDF resume (required) |
-| `jd_text` | Form | Job description as plain text |
-| `jd_url` | Form | Job posting URL (LinkedIn, Naukri, Indeed) |
+| Field     | Type | Description                                |
+| --------- | ---- | ------------------------------------------ |
+| `resume`  | File | PDF resume (required)                      |
+| `jd_text` | Form | Job description as plain text              |
+| `jd_url`  | Form | Job posting URL (LinkedIn, Naukri, Indeed) |
 
 **Response:**
+
 ```json
 {
   "score": {
     "ats_score": 79.54,
-    "keyword_score": 87.50,
+    "keyword_score": 87.5,
     "semantic_score": 71.59,
     "matched_skills": ["react", "nodejs", "python"],
     "missing_skills": ["mongodb", "docker"]
   },
   "advice": "...",
   "rewrites": "...",
-  "interview_questions": "..."
+  "interview_questions": "...",
+  "resume_text": "..."
+}
+```
+
+### `POST /jobs`
+
+| Field      | Type | Description                            |
+| ---------- | ---- | -------------------------------------- |
+| `resume`   | File | PDF resume (required)                  |
+| `location` | Form | Job search location (default: "India") |
+
+**Response:**
+
+```json
+{
+  "predicted_roles": ["Full Stack Developer", "React Developer", "..."],
+  "jobs": [
+    {
+      "title": "Senior React Developer",
+      "company": "Example Corp",
+      "location": "Bangalore",
+      "employment_type": "FULL_TIME",
+      "apply_url": "https://...",
+      "matched_role": "React Developer",
+      "description": "...",
+      "required_skills": ["..."]
+    }
+  ]
 }
 ```
 
@@ -178,7 +212,11 @@ CogniHire/
 
 ## What Makes This Different
 
-Most resume analysers are just keyword matchers wrapped in a UI. CogniHire uses a **custom-trained spaCy NER model** with a hand-curated skill taxonomy to extract and normalize skills across different aliases (`React`, `React.js`, `ReactJS` → same skill). Combined with semantic similarity scoring, it understands *meaning*, not just exact words.
+Most resume analysers are just keyword matchers wrapped in a UI. CogniHire uses a **custom-trained spaCy NER model** with a hand-curated skill taxonomy to extract and normalize skills across different aliases (`React`, `React.js`, `ReactJS` → same skill). Combined with semantic similarity scoring, it understands _meaning_, not just exact words.
+
+The rewrite engine was deliberately tuned through several iterations to avoid the common failure modes of LLM-generated resume advice — it never invents metrics or achievements that aren't already true, never pads bullet points with fluff, and skips lines that are already strong rather than "rewriting for the sake of it."
+
+Beyond a single analysis, CogniHire tracks progress: every resume version you analyse is saved, so you can see your ATS score improve across iterations — turning a one-off tool into something you'd actually come back to during a real job search.
 
 ---
 
@@ -189,4 +227,4 @@ Most resume analysers are just keyword matchers wrapped in a UI. CogniHire uses 
 
 ---
 
-*Built from scratch — from a Google Colab notebook to a full-stack production-ready web app.*
+_Built from scratch — from a Google Colab notebook to a full-stack production-ready web app with auth, persistent history, and AI-powered job matching._
