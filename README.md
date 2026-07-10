@@ -30,16 +30,13 @@ Most resume tools do keyword matching. CogniHire goes further:
 
 ## Screenshots
 
-<table>
-<tr>
-<td><img src="screenshots/1-upload-page.png" width="400"/></td>
-<td><img src="screenshots/2-dashboard.png" width="400"/></td>
-</tr>
-<tr>
-<td><img src="screenshots/6-jobs.png" width="400"/></td>
-<td><img src="screenshots/8-history.png" width="400"/></td>
-</tr>
-</table>
+![Upload Page](screenshots/1-upload-page.png)
+
+![Dashboard](screenshots/2-dashboard.png)
+
+![Jobs](screenshots/6-jobs.png)
+
+![History](screenshots/8-history.png)
 
 ---
 
