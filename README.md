@@ -209,7 +209,7 @@ CogniHire/
 
 ## What Makes This Different
 
-## Most resume tools check if keywords match. CogniHire tries to go a step further — understanding skill aliases, scoring on meaning rather than exact words, and rewriting only what genuinely needs fixing without inventing anything new. The idea was to build something that actually helps during a real job search, not just something that produces a score.
+Most resume tools check if keywords match. CogniHire tries to go a step further — understanding skill aliases, scoring on meaning rather than exact words, and rewriting only what genuinely needs fixing without inventing anything new. The idea was to build something that actually helps during a real job search, not just something that produces a score.
 
 ## Author
 
