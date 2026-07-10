@@ -209,13 +209,7 @@ CogniHire/
 
 ## What Makes This Different
 
-Most resume analysers are just keyword matchers wrapped in a UI. CogniHire uses a **custom-trained spaCy NER model** with a hand-curated skill taxonomy to extract and normalize skills across different aliases (`React`, `React.js`, `ReactJS` → same skill). Combined with semantic similarity scoring, it understands _meaning_, not just exact words.
-
-The rewrite engine was deliberately tuned through several iterations to avoid the common failure modes of LLM-generated resume advice — it never invents metrics or achievements that aren't already true, never pads bullet points with fluff, and skips lines that are already strong rather than "rewriting for the sake of it."
-
-Beyond a single analysis, CogniHire tracks progress: every resume version you analyse is saved, so you can see your ATS score improve across iterations — turning a one-off tool into something you'd actually come back to during a real job search.
-
----
+## Most resume tools check if keywords match. CogniHire tries to go a step further — understanding skill aliases, scoring on meaning rather than exact words, and rewriting only what genuinely needs fixing without inventing anything new. The idea was to build something that actually helps during a real job search, not just something that produces a score.
 
 ## Author
 
